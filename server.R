@@ -1,51 +1,54 @@
-library(dplyr)
+#INFO 201 M18 Exercise 5 Server
+
+#Require the following: shiny, HSUAR, dyplr, and ggplot2
 library(shiny)
-library(plotly)
-library(httr)
+library(HSAUR)
+library(dplyr)
 library(ggplot2)
 
 source("ScriptsForFinance.R")
 
+data <- womensrole
 
-shinyServer(
+
+
+#Here you will define the data that is shown based on your inputs defined in the UI
+#and turn it into an output plot
+#Hint: reference the input values using 'input$inputID'
+shinyServer(function(input, output) {
   
-  function(input, output) {
-  shit.fuck()
-  newRow <- eventReactive(input$add, {c(input$text, input$date, input$num)})  
-  shit.fuck()
-  #nameOfCompany <- eventReactive(input$add, {input$text})
-  #dateBought <- eventReactive(input$add, {input$date})
-  #shares <- eventReactive(input$add, {input$num})
-  
-  #newRow <- eventReactive(input$add, {c(nameOfCompany(), dateBought(), shares())})
-  
-  #acquisitions <- eventReactive(input$add, {rbind(acquisitions, newRow())})
-  # You can access the value of the widget with input$date, e.g.
-  #output$value <- renderPrint({ input$date })
+  #plotNameHere will become what you named your plot in the UI
+  output$plot <- renderPlot({
     
-  # You can access the value of the widget with input$num, e.g.
-  #output$value <- renderPrint({ input$num })  
-  
-  # You can access the value of the widget with input$text, e.g.
-  #output$value <- renderPrint({ input$text }) 
-  
-  # You can access the value of the widget with input$action, e.g.
-  #output$value <- renderPrint({ input$action })
-  
-  output$table <- renderPlotly({
-    #acquisitons <- addAcquisition(newRow)
-    #acquisitons
-    shit.fuck()
-    set.seed(100)
-    d <- diamonds[sample(nrow(diamonds), 1000), ]
-    p <- plot_ly(d, x = ~carat, y = ~price, color = ~carat,
-            size = ~carat, text = ~paste("Clarity: ", clarity))
+    #Here use your different input values to define what data is used to render your plot
+    #The x axis will be the level of education
+    #The y axis will be the level of agreement or disagreement
+    #The dataset used will be filtered by sex
     
     
-    
+    #Filter the dataset based on whether the input is Men, Women, or Both
+    if(input$sex == "Men") {
+      plot.data <- data %>% filter(sex == "Male")
+    } else if (input$sex == "Women") {
+      plot.data <- data %>% filter(sex == "Female")
+    } else {
+      plot.data <- data
     }
     
-  )
-  
+    
+    #Define a y axis value based on the input Agree or Disagree
+    if(input$thoughts == "Agree") {
+      thoughts = plot.data$agree
+    } else {
+      thoughts = plot.data$disagree
+    }
+    
+    #Using the values you just defined, construct a scatterplot using ggplot2
+    #x will be defined by education, y by agree/disagree
+    #Bonus: Factor the color field by sex 
+    #(this will allow you to visually see the difference between Men and Women when Both are selected)
+    ggplot(plot.data, aes(x=education, y=thoughts, color=factor(sex))) + geom_point()
+    
+  })
   
 })
