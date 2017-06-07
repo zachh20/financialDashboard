@@ -14,7 +14,7 @@ addAcquisition <- function(newRow) {
   return(acquisitions)
 }
 
-shit.fuck <- function() {
+test.print <- function() {
   print("fuck")
 }
 
